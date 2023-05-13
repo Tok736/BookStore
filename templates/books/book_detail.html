@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock title %}
+
+{% block content %}
+  <div class="book-detail">
+    <p>
+      <p>
+        <h2>{{ book.title }}</h2>
+        <a class="btn btn-primary btn-sm" href="{% url 'book_update' book.id %}" role="button">
+            Update Book Details
+        </a>
+      </p>
+    </p>
+    <div>
+      <p class="covertext">
+        {% if book.cover %}
+          <img class="bookcover" src="{{ book.cover.url }}" alt="{{ book.title }}">
+        {% endif %}
+      <em class="booktext">{{ book.description|linebreaksbr }}</em>
+      </p>
+      <hr>
+    </div>
+    <ul style="list-style-type:none;">
+      <li>Author: {{ book.author }}</li>
+      <li>Publisher: {{ book.publisher }}</li>
+      <li>Published: {{ book.pubdate }}</li>
+      <li>Price: {{ book.price }}</li>
+    </ul>
+    <hr>
+    <div>
+        <p>Would you like to add your own review of this book?
+            <a class="btn btn-success btn-sm" href="{% url 'review_create' book.id %}" role="button"> Add a new review
+           </a>
+        </p>
+        <h3>Reviews for <em>{{ book.title }}</em>:</h3>
+      <ul>
+        {% for review in book.reviews.all %}
+        <span>
+            <li><a href="{% url 'review_detail' book.id review.id %}">{{ review.review|truncatewords:7 }}</a>
+        </span>
+        <span class="text-muted"> &middot;  submitted by {{ review.creator }} &middot; {{ review.date }}
+          {% if request.user == review.creator %}
+            <a href="{% url 'review_update' book.id review.id %}">Update</a> |
+            <a href="{% url 'review_delete' book.id review.id %}">Delete</a> |
+          {% else %}
+          {% endif %}
+            </li>
+        {% empty %}
+          <p class="text-muted"><em>No reviews have been posted yet.</em></p>
+        {% endfor %}
+      </ul>
+    </div>
+    </p>
+  </div>
+{% endblock content %}
